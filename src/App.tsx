@@ -10,23 +10,25 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
+    client.models.Todo.observeQuery({ authMode: "userPool" }).subscribe({
       next: (data) => setTodos([...data.items]),
     });
   }, []);
 
   function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+    client.models.Todo.create(
+      { content: window.prompt("Todo content") },
+      { authMode: "userPool" }
+    );
   }
 
   function deleteTodo(id: string) {
-    client.models.Todo.delete({ id });
+    client.models.Todo.delete({ id }, { authMode: "userPool" });
   }
 
   return (
     <Authenticator>
       {({ signOut, user }) => {
-        console.log(user);
         return (
           <main>
             <h1>{user?.signInDetails?.loginId}'s todos</h1>
